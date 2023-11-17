@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PDF Report Builder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+      * {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 16px;
+        color: black;
+      }
+      tr:nth-child(odd) {
+        background-color: #ededed;
+      }
+
+      td {
+        padding: 6px;
+      }
+      /* Below we use some flexbox for our header layout: */
+
+      .header-bar {
+        display: flex;
+        height: 30px;
+        font-size: 12px;
+        line-height: 30px;
+        color: #494d51;
+        background-color: #efefee;
+      }
+
+      .header-logo {
+        padding-left: 50px;
+        font-weight: 600;
+      }
+
+      .header-text {
+        text-align: right;
+        flex-grow: 1;
+        padding-right: 50px;
+      }
+
+      .header-logo svg {
+        height: 15px;
+        width: auto;
+        vertical-align: middle;
+        fill: #494d51;
+      }
+
+      .header-page-number {
+        padding-right: 50px;
+        width: 115px;
+        background-color: #f9c623;
+        color: #fff;
+        text-align: right;
+        font-weight: 600;
+      }
+
+      body {
+        counter-reset: page;
+      }
+
+      .page {
+        counter-increment: page;
+      }
+
+      .pagecount::before {
+        content: counter(page);
+      }
+
+      @page: right {
+        @bottom-right {
+          content: counter(page);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page" style="page-break-after: always; position: relative">
+      <div class="pagecount"></div>
+      <h1>Performance Report for Tyler</h1>
+      <table class="text-xs w-full">
+        <tr>
+          <th>Trade Date</th>
+          <th>Security</th>
+          <th>Symbol</th>
+          <th>Type</th>
+          <th>Shares</th>
+          <th>Share Price</th>
+          <th>Value</th>
+          <th>Balance</th>
+        </tr>
+
+        <tr>
+          <td>01/05/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>17</td>
+          <td>$3.00</td>
+          <td>$51.00</td>
+          <td>$151.00</td>
+        </tr>
+        <tr>
+          <td>01/09/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Sell</td>
+          <td>5</td>
+          <td>$5.00</td>
+          <td>-$25.00</td>
+          <td>$126.00</td>
+        </tr>
+        <tr>
+          <td>01/12/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>18</td>
+          <td>$5.00</td>
+          <td>$90.00</td>
+          <td>$216.00</td>
+        </tr>
+        <tr>
+          <td>01/15/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>8</td>
+          <td>$2.00</td>
+          <td>$16.00</td>
+          <td>$232.00</td>
+        </tr>
+        <tr>
+          <td>01/19/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Sell</td>
+          <td>2</td>
+          <td>$3.00</td>
+          <td>-$6.00</td>
+          <td>$226.00</td>
+        </tr>
+        <tr>
+          <td>01/23/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>11</td>
+          <td>$2.00</td>
+          <td>$22.00</td>
+          <td>$248.00</td>
+        </tr>
+        <tr>
+          <td>01/28/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>16</td>
+          <td>$3.00</td>
+          <td>$48.00</td>
+          <td>$296.00</td>
+        </tr>
+        <tr>
+          <td>01/29/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>11</td>
+          <td>$1.00</td>
+          <td>$11.00</td>
+          <td>$307.00</td>
+        </tr>
+        <tr>
+          <td>02/01/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Sell</td>
+          <td>3</td>
+          <td>$5.00</td>
+          <td>-$15.00</td>
+          <td>$292.00</td>
+        </tr>
+        <tr>
+          <td>02/05/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>2</td>
+          <td>$2.00</td>
+          <td>$4.00</td>
+          <td>$296.00</td>
+        </tr>
+        <tr>
+          <td>02/10/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Sell</td>
+          <td>19</td>
+          <td>$3.00</td>
+          <td>-$57.00</td>
+          <td>$239.00</td>
+        </tr>
+        <tr>
+          <td>02/12/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>9</td>
+          <td>$3.00</td>
+          <td>$27.00</td>
+          <td>$266.00</td>
+        </tr>
+        <tr>
+          <td>02/16/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>1</td>
+          <td>$5.00</td>
+          <td>$5.00</td>
+          <td>$271.00</td>
+        </tr>
+        <tr>
+          <td>02/19/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>19</td>
+          <td>$3.00</td>
+          <td>$57.00</td>
+          <td>$328.00</td>
+        </tr>
+        <tr>
+          <td>02/21/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>14</td>
+          <td>$5.00</td>
+          <td>$70.00</td>
+          <td>$398.00</td>
+        </tr>
+        <tr>
+          <td>02/24/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>3</td>
+          <td>$4.00</td>
+          <td>$12.00</td>
+          <td>$410.00</td>
+        </tr>
+        <tr>
+          <td>03/01/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>20</td>
+          <td>$4.00</td>
+          <td>$80.00</td>
+          <td>$490.00</td>
+        </tr>
+        <tr>
+          <td>03/04/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>15</td>
+          <td>$2.00</td>
+          <td>$30.00</td>
+          <td>$520.00</td>
+        </tr>
+        <tr>
+          <td>03/08/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Sell</td>
+          <td>12</td>
+          <td>$5.00</td>
+          <td>-$60.00</td>
+          <td>$460.00</td>
+        </tr>
+        <tr>
+          <td>03/13/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Sell</td>
+          <td>5</td>
+          <td>$5.00</td>
+          <td>-$25.00</td>
+          <td>$435.00</td>
+        </tr>
+        <tr>
+          <td>03/16/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Sell</td>
+          <td>7</td>
+          <td>$3.00</td>
+          <td>-$21.00</td>
+          <td>$414.00</td>
+        </tr>
+        <tr>
+          <td>03/17/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>13</td>
+          <td>$2.00</td>
+          <td>$26.00</td>
+          <td>$440.00</td>
+        </tr>
+        <tr>
+          <td>03/18/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>15</td>
+          <td>$4.00</td>
+          <td>$60.00</td>
+          <td>$500.00</td>
+        </tr>
+        <tr>
+          <td>03/22/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Sell</td>
+          <td>20</td>
+          <td>$3.00</td>
+          <td>-$60.00</td>
+          <td>$440.00</td>
+        </tr>
+        <tr>
+          <td>03/23/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>12</td>
+          <td>$5.00</td>
+          <td>$60.00</td>
+          <td>$500.00</td>
+        </tr>
+        <tr>
+          <td>03/26/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>14</td>
+          <td>$4.00</td>
+          <td>$56.00</td>
+          <td>$556.00</td>
+        </tr>
+        <tr>
+          <td>03/30/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>10</td>
+          <td>$1.00</td>
+          <td>$10.00</td>
+          <td>$566.00</td>
+        </tr>
+        <tr>
+          <td>04/03/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Sell</td>
+          <td>5</td>
+          <td>$4.00</td>
+          <td>-$20.00</td>
+          <td>$546.00</td>
+        </tr>
+        <tr>
+          <td>04/08/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>8</td>
+          <td>$5.00</td>
+          <td>$40.00</td>
+          <td>$586.00</td>
+        </tr>
+        <tr>
+          <td>04/13/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>17</td>
+          <td>$4.00</td>
+          <td>$68.00</td>
+          <td>$654.00</td>
+        </tr>
+        <tr>
+          <td>04/14/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>20</td>
+          <td>$4.00</td>
+          <td>$80.00</td>
+          <td>$734.00</td>
+        </tr>
+        <tr>
+          <td>04/17/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>4</td>
+          <td>$4.00</td>
+          <td>$16.00</td>
+          <td>$750.00</td>
+        </tr>
+        <tr>
+          <td>04/21/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>20</td>
+          <td>$5.00</td>
+          <td>$100.00</td>
+          <td>$850.00</td>
+        </tr>
+        <tr>
+          <td>04/25/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>20</td>
+          <td>$2.00</td>
+          <td>$40.00</td>
+          <td>$890.00</td>
+        </tr>
+        <tr>
+          <td>04/27/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>19</td>
+          <td>$5.00</td>
+          <td>$95.00</td>
+          <td>$985.00</td>
+        </tr>
+        <tr>
+          <td>04/30/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Sell</td>
+          <td>12</td>
+          <td>$4.00</td>
+          <td>-$48.00</td>
+          <td>$937.00</td>
+        </tr>
+        <tr>
+          <td>05/04/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>14</td>
+          <td>$1.00</td>
+          <td>$14.00</td>
+          <td>$951.00</td>
+        </tr>
+        <tr>
+          <td>05/05/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Sell</td>
+          <td>9</td>
+          <td>$2.00</td>
+          <td>-$18.00</td>
+          <td>$933.00</td>
+        </tr>
+        <tr>
+          <td>05/09/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>20</td>
+          <td>$4.00</td>
+          <td>$80.00</td>
+          <td>$1013.00</td>
+        </tr>
+        <tr>
+          <td>05/14/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>10</td>
+          <td>$3.00</td>
+          <td>$30.00</td>
+          <td>$1043.00</td>
+        </tr>
+        <tr>
+          <td>05/15/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Sell</td>
+          <td>8</td>
+          <td>$1.00</td>
+          <td>-$8.00</td>
+          <td>$1035.00</td>
+        </tr>
+        <tr>
+          <td>05/19/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Sell</td>
+          <td>15</td>
+          <td>$5.00</td>
+          <td>-$75.00</td>
+          <td>$960.00</td>
+        </tr>
+        <tr>
+          <td>05/20/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>10</td>
+          <td>$2.00</td>
+          <td>$20.00</td>
+          <td>$980.00</td>
+        </tr>
+        <tr>
+          <td>05/23/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>15</td>
+          <td>$1.00</td>
+          <td>$15.00</td>
+          <td>$995.00</td>
+        </tr>
+        <tr>
+          <td>05/27/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>14</td>
+          <td>$1.00</td>
+          <td>$14.00</td>
+          <td>$1009.00</td>
+        </tr>
+        <tr>
+          <td>05/30/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>18</td>
+          <td>$4.00</td>
+          <td>$72.00</td>
+          <td>$1081.00</td>
+        </tr>
+        <tr>
+          <td>06/03/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Sell</td>
+          <td>11</td>
+          <td>$1.00</td>
+          <td>-$11.00</td>
+          <td>$1070.00</td>
+        </tr>
+        <tr>
+          <td>06/08/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>10</td>
+          <td>$5.00</td>
+          <td>$50.00</td>
+          <td>$1120.00</td>
+        </tr>
+        <tr>
+          <td>06/12/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Sell</td>
+          <td>8</td>
+          <td>$5.00</td>
+          <td>-$40.00</td>
+          <td>$1080.00</td>
+        </tr>
+        <tr>
+          <td>06/13/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>4</td>
+          <td>$2.00</td>
+          <td>$8.00</td>
+          <td>$1088.00</td>
+        </tr>
+        <tr>
+          <td>06/14/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>20</td>
+          <td>$5.00</td>
+          <td>$100.00</td>
+          <td>$1188.00</td>
+        </tr>
+        <tr>
+          <td>06/17/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>4</td>
+          <td>$5.00</td>
+          <td>$20.00</td>
+          <td>$1208.00</td>
+        </tr>
+        <tr>
+          <td>06/18/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>15</td>
+          <td>$3.00</td>
+          <td>$45.00</td>
+          <td>$1253.00</td>
+        </tr>
+        <tr>
+          <td>06/21/2010</td>
+          <td>DocRaptor Growth Fund</td>
+          <td>$DOC</td>
+          <td>Buy</td>
+          <td>9</td>
+          <td>$3.00</td>
+          <td>$27.00</td>
+          <td>$1280.00</td>
+        </tr>
+        <tr>
+          <td>Grand Total</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td>$1370.00</td>
+        </tr>
+      </table>
+    </div>
+    <div class="page" style="page-break-after: always">
+      <div class="pagecount"></div>
+
+      <div class="bg-slate-600 text-white p-4 rounded-md">
+        <p class="text-white font-bold text-lg">Market Outlook for 2024</p>
+      </div>
+      <h1 class="font-bold mt-4">Bullish 3-Year Market Outlook</h1>
+      <p class="text-md leading-6">
+        I am highly optimistic about the investment outlook over the next three
+        years due to massive advancements in artificial intelligence and
+        exponential growth in the technology sector. Powerful AI algorithms,
+        quantum computing, 5G connectivity, crypto assets, and the metaverse
+        will drive extraordinary gains for innovative companies.
+      </p>
+      <p class="text-base mt-2">
+        However, some caution is warranted. While technology will propel
+        economic expansion, high government debt and rising interest rates pose
+        macroeconomic headwinds. The national debt recently surpassed $31
+        trillion in the US, limiting fiscal stimulus options. Meanwhile the
+        Federal Reserve is aggressively tightening monetary policy to combat
+        inflation, making capital more expensive.
+      </p>
+      <p class="text-base mt-2">
+        But I believe the positives far outweigh the negatives. AI and
+        technology will increase productivity, create exciting new business
+        models, and transform industries. Leading technology firms have strong
+        balance sheets and enormous growth runways. I am positioning client
+        portfolios with secular tech winners that can deliver alpha despite
+        rising rates and economic challenges.
+      </p>
+      <p class="text-base mt-2">
+        In conclusion, astute stock picking focused on AI and technology
+        innovators should lead to market-beating returns over the next three
+        years. However, risks like the national debt and Fed tightening can't be
+        ignored. Overall I am extremely bullish on stocks due to
+        transformational tech breakthroughs.
+      </p>
+    </div>
+
+    <div class="page" style="page-break-after: always">
+      <div class="pagecount"></div>
+
+      <div class="flex">
+        <div>
+          <h1 class="text-2xl font-bold">Disclosures</h1>
+
+          <h2><b>Risk Disclosure</b></h2>
+          <p>
+            Investing in financial markets carries inherent risks. The value of
+            investments can fluctuate and may result in the loss of your
+            principal. Past performance is not indicative of future results. It
+            is important to carefully consider your risk tolerance and
+            investment objectives before making any investment decisions.
+          </p>
+
+          <h2><b>Investment Strategy</b></h2>
+          <p>
+            Our investment strategy is based on a diversified portfolio
+            approach. We aim to balance risk and return by investing in a mix of
+            asset classes, such as equities, fixed income, and alternative
+            investments. Our strategy is tailored to each client's unique
+            financial goals and risk tolerance.
+          </p>
+
+          <h2><b>Fees & Expenses</b></h2>
+          <p>
+            We charge fees based on the assets under management. These fees
+            cover investment advisory services, portfolio management, and
+            reporting. A detailed fee schedule is provided to clients upon
+            engagement, and clients are encouraged to review these fees
+            carefully.
+          </p>
+        </div>
+        <div>
+          <h2><b>Conflicts of Interest</b></h2>
+          <p>
+            As an investment manager, we are committed to acting in the best
+            interests of our clients. However, conflicts of interest may arise.
+            These conflicts will be disclosed and managed in accordance with
+            regulatory requirements. Our primary duty is to our clients'
+            financial well-being.
+          </p>
+
+          <h2 class="font-bold">Regulatory Compliance</h2>
+          <p>
+            We operate in compliance with all applicable regulations and
+            securities laws. Our firm is registered with the appropriate
+            regulatory authorities and adheres to industry best practices to
+            ensure the protection of our clients' investments.
+          </p>
+
+          <h2 class="font-bold">Contact Information</h2>
+          <p>
+            If you have questions or require additional information regarding
+            our disclosures or investment services, please contact us at the
+            following address:
+          </p>
+
+          <h2 class="font-bold">Regulatory Compliance</h2>
+          <p>
+            We operate in compliance with all applicable regulations and
+            securities laws. Our firm is registered with the appropriate
+            regulatory authorities and adheres to industry best practices to
+            ensure the protection of our clients' investments.
+          </p>
+          <h2 class="font-bold">Regulatory Compliance</h2>
+          <p>
+            We operate in compliance with all applicable regulations and
+            securities laws. Our firm is registered with the appropriate
+            regulatory authorities and adheres to industry best practices to
+            ensure the protection of our clients' investments.
+          </p>
+          <h2 class="font-bold">Regulatory Compliance</h2>
+          <p>
+            We operate in compliance with all applicable regulations and
+            securities laws. Our firm is registered with the appropriate
+            regulatory authorities and adheres to industry best practices to
+            ensure the protection of our clients' investments.
+          </p>
+          <h2 class="font-bold">Regulatory Compliance</h2>
+          <p>
+            We operate in compliance with all applicable regulations and
+            securities laws. Our firm is registered with the appropriate
+            regulatory authorities and adheres to industry best practices to
+            ensure the protection of our clients' investments.
+          </p>
+          <h2 class="font-bold">Regulatory Compliance</h2>
+          <p>
+            We operate in compliance with all applicable regulations and
+            securities laws. Our firm is registered with the appropriate
+            regulatory authorities and adheres to industry best practices to
+            ensure the protection of our clients' investments.
+          </p>
+          <address class="font-bold">
+            123 Investment Way<br />
+            Anytown, USA<br />
+            Phone: (555) 123-4567<br />
+            Email: info@investmentmanager.com
+          </address>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
