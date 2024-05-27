@@ -6,48 +6,74 @@
     <title>Footer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-.dateeeee {
-  background-color: red;
-}
+      #header, #footer { padding: 0 !important; }
+      footer {
+        width: 100%;
+        padding: 0;
+
+        display: flex;
+        font-size: 9px;
+        font-weight: bold;
+        font-family: Arial, Helvetica, sans-serif;
+        justify-content: space-between;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        background-color: red;
+      }
+
+      footer a {
+        text-decoration: none;
+        color: inherit;
+      }
+      footer table {
+        width: 100%;
+        border-top: 1px solid black;
+      }
+      .headerLogo {
+        height: 24px;
+      }
+
+      .headerTitle {
+        font-weight: bold;
+        text-align: center;
+      }
+      .headerId {
+        text-align: right;
+      }
+
+      .footerParameters {
+        padding: 0;
+      }
+
+      .footerParameters {
+        list-style: none;
+        font-size: 0.75em;
+      }
     </style>
   </head>
   <body>
-    <div class="dateeeee"
-      style="
-        width: 15%;
-        margin-left: 0.5cm;
-        text-align: left;
-        font-size: 7px;
-        color: red;
-        background-color: red;
-      "
-    >
-      <span class="date"></span>
-    </div>
-    <div
-      style="
-        width: 70%;
-        direction: rtl;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: clip;
-        text-align: center;
-        font-size: 7px;
-        color: #000;
-      "
-    >
-      <span>PDFTRON FOOTER EXAMPLE</span>
-    </div>
-    <div
-      style="
-        width: 15%;
-        margin-right: 0.5cm;
-        text-align: right;
-        font-size: 7px;
-        color: #000;
-      "
-    >
-      <span class="pageNumber"></span>
-    </div>
+    <footer>
+      <table cellpadding="0" cellspacing="0">
+        <tr>
+          <td>
+            <ul class="footerParameters">
+              <li>ADFREW</li>
+              <li>12/01/2023 to 12/31/2023</li>
+              <li>ADFREW</li>
+              <li>12/01/2023 to 12/31/2023</li>
+            </ul>
+          </td>
+          <td class="headerTitle">
+            STP Investments LLC. | 44 Gay Street | West Cheser, PA 19320
+            <br />
+            <a href="https://www.stpis.com">www.stpis.com</a>
+          </td>
+          <td class="headerId">
+            <span class="pageNumber"></span> of
+            <span class="totalPages"></span>
+          </td>
+        </tr>
+      </table>
+    </footer>
   </body>
 </html>

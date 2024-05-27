@@ -132,4 +132,6 @@ dist
 *.pdf
 *.dylib
 *.bin
-src/modules
+
+*.key
+*.cert

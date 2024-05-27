@@ -3,53 +3,25 @@
 // Consult README.md regarding legal and licensing information.
 //---------------------------------------------------------------------------------------
 
-import express, { NextFunction, Request, Response } from "express";
 import path from "path";
 import * as fs from "node:fs/promises";
-import { randomUUID } from "crypto";
-import { PDFNet } from "@pdftron/pdfnet-node"; // you may need to set up NODE_PATH environment variable to make this work.
-import { CosmosClient } from "@azure/cosmos";
-import SignalR from "@microsoft/signalr";
-import mongoose from "mongoose";
-import { safeConnect } from "./server/mongo";
-import {
-  Visualization,
-  visualizationValidator,
-} from "./server/models/visualization.model";
+import * as fsSync from "node:fs";
+import ExcelJS from "exceljs";
+import spdy from "spdy";
+import express from "express";
+
+import crypto from "node:crypto";
+import { PDFNet } from "@pdftron/pdfnet-node";
 
 require("dotenv").config();
 
-const server = express();
+const app = express();
 
-// const connection = new SignalR.HubConnectionBuilder()
-//   .withUrl("http://127.0.0.1:7265/chathub")
-//   .configureLogging(SignalR.LogLevel.Information)
-//   .build();
-server.use(express.json());
-server.use((request: Request, response: Response, next: NextFunction) => {
-  // Access the request headers
-  const headers = request.headers;
-  const cache = new Map(
-    Object.entries(headers).map(([key, val]) => [key, val])
-  );
+app.use(express.json());
 
-  // // Authorization Token
-  // if (!cache.has("Authorization")) {
-  //   console.error("No Authorization Token provided");
-  // }
+const CERT_DIR = `./cert`;
+const PORT = 8000;
 
-  // // Authorization Token
-  // if (!cache.has("Firm")) {
-  //   console.error("No firm id provided");
-  // }
-
-  // // Authorization Token
-  // if (!cache.has("User")) {
-  //   console.error("No user id provided");
-  // }
-
-  next();
-});
 const {
   HTML2PDF,
   ContentReplacer,
@@ -58,20 +30,64 @@ const {
   initialize,
   PDFDoc,
   SDFDoc,
+  Stamper,
 } = PDFNet;
 
-server.get("/", async (req: Request, res: Response) => {
+// POST
+// /api/v1/export/excel
+app.get("/excel", async (req, res) => {
+  try {
+    const data = [
+      { Name: "John", Age: 25, Country: "USA" },
+      { Name: "Jane", Age: 30, Country: "Canada" },
+      { Name: "Bob", Age: 28, Country: "UK" },
+    ];
+
+    const wb = new ExcelJS.Workbook();
+    const sheet = wb.addWorksheet("Report 1");
+
+    // Add headers
+    const headers = Object.keys(data[0]);
+    sheet.addRow(headers);
+
+    // Add data to the worksheet
+    data.forEach((row) => {
+      sheet.addRow(row);
+    });
+
+    wb.addWorksheet("Report 2");
+    wb.addWorksheet("Report 3");
+
+    const filename = `CLIENT_ID_NAME_MMDDYYYY`;
+    const buffer = await wb.xlsx.writeBuffer({
+      filename,
+    });
+
+    // Set response headers
+    res.header("Content-Type", "application/ms-excel");
+    res.header(
+      "Content-Disposition",
+      `attachment; filename="${filename}.xlsx"`
+    );
+
+    res.status(200).send(buffer);
+  } catch (error) {
+    res.status(400).send({ error: "Failed to export excel file." });
+  }
+});
+
+app.get("/pdf", async (req, res) => {
   try {
     await initialize(process.env.APRYSE_KEY);
 
-    const name = randomUUID();
+    // const name = randomUUID();
 
     // For HTML2PDF we need to locate the html2pdf module. If placed with the
     // PDFNet library, or in the current working directory, it will be loaded
     // automatically. Otherwise, it must be set manually using HTML2PDF.setModulePath.
-    const htmlToPdfSDK = path.join(__dirname, "../src/modules", "HTML2PDFMac");
+    const htmlToPdfSDK = path.join(__dirname, "../src/modules", "html2pdf");
     initialize();
-    await enableJavaScript(true);
+    // await enableJavaScript(false);
 
     await HTML2PDF.setModulePath(htmlToPdfSDK);
 
@@ -95,131 +111,175 @@ server.get("/", async (req: Request, res: Response) => {
     const header = await fs.readFile(path.join(__dirname, "./header.html"), {
       encoding: "utf-8",
     });
+
     const footer = await fs.readFile(path.join(__dirname, "./footer.html"), {
       encoding: "utf-8",
     });
-    const doc = await PDFDoc.createFromURL(
-      "https://www.princexml.com/howcome/2016/samples/invoice/index.pdf"
-    );
 
-    await pdf.insertPages(0, doc, 1, 1, 0);
-    await sdk.setMargins(".39in", ".39in", ".39in", ".39in");
+    // const doc = await PDFDoc.createFromURL(
+    //   "https://www.princexml.com/howcome/2016/samples/invoice/index.pdf"
+    // );
+
+    await sdk.insertFromHtmlString2(header, settings);
+    // await sdk.convert(pdf);
+
+    // const headerPDF = await PDFDoc.create();
+
+    // await headerPDF.initSecurityHandler();
+
+    // await sdk.insertFromHtmlString2(header, settings);
+    // await sdk.convert(headerPDF);
+
+    // await pdf.insertPages(0, doc, 1, 1, 0);
+    await sdk.setMargins(".75in", ".75in", ".39in", ".39in");
 
     await sdk.setHeader(header);
     await sdk.setFooter(footer);
 
-    await settings.setPrintBackground(true);
-
     await sdk.setLandscape(false);
     await sdk.insertFromHtmlString2(html, settings);
-
     await sdk.convert(pdf);
 
-    await pdf.save(`dist/${name}.pdf`, SDFDoc.SaveOptions.e_linearized);
+    // const stamper = await Stamper.create(
+    //   PDFNet.Stamper.SizeType.e_relative_scale,
+    //   1,
+    //   1
+    // );
 
-    return res
-      .status(200)
-      .sendFile(path.join(__dirname, `../dist/${name}.pdf`));
-  } catch (error) {
-    return res.status(400).json({
-      message: "Failed to create PDF report.",
-    });
-  }
-});
+    // await stamper.setAlignment(0, 0);
 
-server.get("/visualizations", async (req: Request, res: Response) => {
-  try {
-    const visuals = await Visualization.find()
-      .where("firm")
-      .equals(req.headers["firm"]);
+    // await stamper.showsOnPrint(true);
 
-    return res.status(200).json(
-      visuals.map((v) => {
-        return {
-          id: v._id,
-          name: v.name,
-          description: v.description,
-        };
-      })
+    // const page = await headerPDF.getPage(1);
+
+    // const pgSet = await PDFNet.PageSet.createRange(1, await pdf.getPageCount());
+
+    // await stamper.stampPage(pdf, page, pgSet);
+    // await stamper.setAlignment(
+    //   PDFNet.Stamper.HorizontalAlignment.e_horizontal_left,
+    //   PDFNet.Stamper.VerticalAlignment.e_vertical_top
+    // );
+    // await stamper.setAsBackground(true);
+
+    // save the document to a memory buffer
+
+    const hash = crypto
+      .createHash("sha512", { defaultEncoding: "utf-8" })
+      .update("some_string")
+      .digest("hex");
+
+    const meta = await pdf.getDocInfo();
+    await meta.setKeywords(`account_id_hash=${hash}`);
+    console.log(`account_id_hash=${hash}`);
+
+    async function hashPII(pdf: PDFNet.PDFDoc, text: string) {
+      const hash = crypto.createHash("sha512").update(`${text}`).digest("hex");
+
+      const meta = await pdf.getDocInfo();
+      await meta.setKeywords(`account_id_hash=${hash}werewrewrewr`);
+
+      const current = await pdf.getDocInfo();
+      const c = await current.getKeywords();
+      console.log(c);
+      await meta.setKeywords(`account_id_hash=${hash}`);
+      // console.log(`account_id_hash=${hash}`);
+    }
+
+    await hashPII(pdf, "cutomaccountid");
+
+    await pdf.lock();
+
+    const buffer = await pdf.saveMemoryBuffer(
+      PDFNet.SDFDoc.SaveOptions.e_linearized
     );
+    await pdf.unlock();
+
+    // Set response headers
+    res.header("Content-Type", "application/octet-stream");
+    res.header("Content-Disposition", `attachment; filename="03122024.pdf"`);
+
+    res.write(buffer);
+    res.status(200).end();
   } catch {
-    return res.status(400).json({ message: "failure" });
+    return res.status(400).end();
   }
 });
 
-server.get("/visualizations/:id", async (req: Request, res: Response) => {
-  try {
-    const visual = await Visualization.findById(req.params["id"]);
-    return res.status(200).json(visual);
-  } catch {
-    return res.status(400).json({ message: "failure" });
-  }
-});
+// GET
+// /apryse
+app.get("/apryse", async (req, res) => {
+  const main = async () => {
+    try {
+      // For HTML2PDF we need to locate the html2pdf module. If placed with the
+      // PDFNet library, or in the current working directory, it will be loaded
+      // automatically. Otherwise, it must be set manually using HTML2PDF.setModulePath.
+      await PDFNet.HTML2PDF.setModulePath(
+        path.join(__dirname, "../src/modules/html2pdf")
+      );
 
-server.post("/visualizations", async (req: Request, res: Response) => {
-  try {
-    console.log(JSON.stringify(req.body));
-    const isValid = visualizationValidator.safeParse(req.body);
+      console.log(
+        "module path",
+        path.join(__dirname, "../src/modules/html2pdf")
+      );
 
-    if (!isValid.success) {
-      return res.status(400).json({ message: `${isValid.error}` });
+      if (!(await PDFNet.HTML2PDF.isModuleAvailable())) {
+        console.log(
+          "Unable to run HTML2PDFTest: Apryse SDK HTML2PDF module not available."
+        );
+        console.log(
+          "---------------------------------------------------------------"
+        );
+        console.log(
+          "The HTML2PDF module is an optional add-on, available for download"
+        );
+        console.log(
+          "at https://www.pdftron.com/. If you have already downloaded this"
+        );
+        console.log(
+          "module, ensure that the SDK is able to find the required files"
+        );
+        console.log("using the HTML2PDF.setModulePath() function.");
+
+        return;
+      }
+      const html2pdf = await PDFNet.HTML2PDF.create();
+      const doc = await PDFNet.PDFDoc.create();
+      const html =
+        "<html><body><h1>Heading</h1><p>Paragraph.</p></body></html>";
+
+      html2pdf.insertFromHtmlString(html);
+      await html2pdf.convert(doc);
+
+      doc.save("./tyler.pdf", PDFNet.SDFDoc.SaveOptions.e_linearized);
+
+      html2pdf.setLogFilePath("./tyler.log");
+
+      res.status(200).json({ message: "Created Apryse PDF" });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({ message: "Failed to ake Apryse PDF" });
     }
+  };
 
-    const visual = new Visualization(isValid.data);
-    await visual.save();
-
-    return res.status(200).json(visual);
-  } catch {
-    return res.status(400).json({ message: "failure" });
-  }
+  await PDFNet.runWithCleanup(
+    main,
+    "demo:1697313909377:7ce14fc80300000000c37f250af68c3cd6fc05121417418689d76a90fb"
+  );
 });
 
-server.put("/visualizations/:id", async (req: Request, res: Response) => {
-  try {
-    const isValid = visualizationValidator.safeParse(req.body);
+function createServer() {
+  return spdy.createServer(
+    {
+      key: fsSync.readFileSync(`${CERT_DIR}/server.key`),
+      cert: fsSync.readFileSync(`${CERT_DIR}/server.cert`),
+    },
+    app
+  );
+}
 
-    if (!isValid.success) {
-      return res.status(400).json({ message: `${isValid.error}` });
-    }
+const server = createServer();
 
-    await Visualization.findByIdAndUpdate(req.params["id"], isValid.data, {
-      new: true,
-    });
-    return res.status(200).json({
-      message: `Successfully updated visualization ${req.params["id"]}`,
-    });
-  } catch {
-    return res.status(400).json({ message: "failure" });
-  }
-});
-
-server.delete("/visualizations/:id", async (req: Request, res: Response) => {
-  try {
-    await Visualization.findByIdAndDelete(req.params["id"]);
-    return res.status(200).json({
-      message: `Successfully deleted visualization ${req.params["id"]}`,
-    });
-  } catch {
-    return res.status(400).json({ message: "failure" });
-  }
-});
-
-server.delete("/visualizations", async (req: Request, res: Response) => {
-  try {
-    await Visualization.deleteMany();
-    return res.status(200).json({
-      message: `Successfully deleted all visualizations`,
-    });
-  } catch {
-    return res.status(400).json({ message: "failure" });
-  }
-});
-
-server.listen(process.env.SERVER_PORT, async () => {
-  try {
-    await safeConnect();
-  } catch {
-    console.error("error");
-  }
-  console.log(`Server running at http://localhost:${process.env.SERVER_PORT}`);
+server.listen(PORT, () => {
+  console.log(process.platform);
+  console.log(`API Available @ https://localhost:${PORT}`);
 });

@@ -6,44 +6,63 @@
     <title>Footer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-
+      #header,
+      #footer,
+      body {
+        padding: 0 !important;
+        background-color: transparent;
+      }
       header {
-        margin: 0 0.39in;
+        width: 100%;
+        padding: 0;
         display: flex;
-        font-size: 10px;
-        color: purple;
+        font-size: 9px;
+        font-weight: bold;
+        font-family: Arial, Helvetica, sans-serif;
         justify-content: space-between;
-        background-color: red !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        background-color: blue;
+      }
+      header table {
+        width: 100%;
+        border-bottom: 2px solid blue;
+      }
+      .headerLogo {
+        height: 48px;
+      }
+
+      .headerTitle {
+        font-weight: bold;
+        text-align: center;
+      }
+      .headerId {
+        color: #ededed;
+        text-align: right;
       }
     </style>
   </head>
   <body>
-    <header style="background-color: green;">
-      <div>
-        <svg
-          aria-hidden="true"
-          class="pre-logo-svg"
-          focusable="false"
-          viewBox="0 0 24 24"
-          role="img"
-          width="24px"
-          height="24px"
-          fill="none"
-        >
-          <path
-            fill="currentColor"
-            fill-rule="evenodd"
-            d="M21 8.719L7.836 14.303C6.74 14.768 5.818 15 5.075 15c-.836 0-1.445-.295-1.819-.884-.485-.76-.273-1.982.559-3.272.494-.754 1.122-1.446 1.734-2.108-.144.234-1.415 2.349-.025 3.345.275.2.666.298 1.147.298.386 0 .829-.063 1.316-.19L21 8.719z"
-            clip-rule="evenodd"
-          ></path>
-        </svg>
-      </div>
+    <header class="flex justify-between items-center">
+      <svg
+        aria-hidden="true"
+        focusable="false"
+        viewBox="0 0 24 24"
+        role="img"
+        fill="none"
+        class="headerLogo"
+      >
+        <path
+          fill="currentColor"
+          fill-rule="evenodd"
+          d="M21 8.719L7.836 14.303C6.74 14.768 5.818 15 5.075 15c-.836 0-1.445-.295-1.819-.884-.485-.76-.273-1.982.559-3.272.494-.754 1.122-1.446 1.734-2.108-.144.234-1.415 2.349-.025 3.345.275.2.666.298 1.147.298.386 0 .829-.063 1.316-.19L21 8.719z"
+          clip-rule="evenodd"
+        ></path>
+      </svg>
 
-      <span>PDFTRON Hedaer EXAMPLE</span>
+      <span>Portfolio Position Portfolio Position</span>
 
-      <div style="background-color: blue !important">
-        <span class="pageNumber"></span>
-      </div>
+      <span>10032</span>
     </header>
   </body>
 </html>
